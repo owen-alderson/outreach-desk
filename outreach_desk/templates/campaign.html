@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ c.name }} · outreach-desk{% endblock %}
+{% block content %}
+<a href="/campaigns" class="muted">← Campaigns</a>
+<h1>{{ c.name }} <span class="pill">{{ c.mode }}</span></h1>
+<p class="sub">{{ c.goal }}{% if c.goal_detail %}: {{ c.goal_detail }}{% endif %} · {{ c.tone }} · from {{ c.sender_name }}</p>
+{% if msg %}<div class="notice">{{ msg }}</div>{% endif %}
+
+<div class="panel row">
+  <strong>Sequence</strong>
+  {% for s in steps %}
+    <span class="pill">{{ "Email 1 · day 0" if s.position == 0 else "Follow-up " ~ s.position ~ " · +" ~ s.delay_days ~ "d" }}</span>
+  {% endfor %}
+  {% if c.target %}<span class="muted">· For: {{ c.target }}</span>{% endif %}
+</div>
+
+<div class="row spread"><h2>Enrolled ({{ rows | length }})</h2>
+  {% if rows %}<form method="post" action="/campaigns/{{ c.id }}/score"><button class="small">Score fit with Jev</button></form>{% endif %}
+</div>
+<div class="panel table-wrap">
+  <table>
+    <tr><th>Contact</th><th>Fit</th><th>Status</th><th>Next</th></tr>
+    {% for e, x in rows %}
+    <tr>
+      <td><strong>{{ x.name }}</strong> <span class="muted">{{ x.role }}{% if x.company %} · {{ x.company }}{% endif %}</span></td>
+      <td>{% if x.fit is not none %}{{ "%.0f" | format(x.fit * 100) }}%{% else %}<span class="muted">-</span>{% endif %}</td>
+      <td><span class="pill {{ 'good' if e.status == 'replied' else 'bad' if e.status == 'stopped' else '' }}">{{ e.status }}</span></td>
+      <td class="muted">
+        {% if e.status != "active" %}-
+        {% elif e.next_due_at %}step {{ e.next_step }} drafts {{ e.next_due_at.strftime("%b %d %H:%M") }} UTC
+        {% else %}step {{ e.next_step }} in review{% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4" class="empty">Nobody enrolled yet.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+
+<h2>Enrol contacts</h2>
+{% if available %}
+<form class="panel" method="post" action="/campaigns/{{ c.id }}/enroll">
+  <div class="table-wrap"><table>
+    {% for x in available %}
+    <tr>
+      <td style="width:30px"><input type="checkbox" name="contact_ids" value="{{ x.id }}" id="en-{{ x.id }}"></td>
+      <td><label for="en-{{ x.id }}" style="margin:0;color:var(--ink);font-weight:500">{{ x.name }}</label></td>
+      <td class="muted">{{ x.role }}{% if x.company %} · {{ x.company }}{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table></div>
+  <div style="margin-top:10px"><button class="primary" type="submit">Enrol selected</button></div>
+</form>
+{% else %}
+<div class="panel empty">Everyone is enrolled. <a href="/contacts">Add contacts</a>.</div>
+{% endif %}
+{% endblock %}

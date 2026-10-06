@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Pipeline · outreach-desk{% endblock %}
+{% block content %}
+<h1>Pipeline</h1>
+<p class="sub">Contacts move forward automatically when emails send and replies come in. Change a stage by hand any time.</p>
+<div class="board">
+  {% for stage, people in columns.items() %}
+  <div class="col">
+    <h3>{{ stage }} · {{ people | length }}</h3>
+    {% for c in people %}
+    <div class="mini">
+      <strong>{{ c.name }}</strong><br>
+      <span class="muted">{{ c.company or c.role }}</span>
+      <select name="stage" aria-label="Stage for {{ c.name }}" hx-post="/contacts/{{ c.id }}/stage" hx-trigger="change" hx-swap="none"
+              hx-on::after-request="window.location.reload()">
+        {% for s in stages %}<option value="{{ s }}" {% if s == c.stage %}selected{% endif %}>{{ s }}</option>{% endfor %}
+      </select>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

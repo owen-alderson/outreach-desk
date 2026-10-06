@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Contacts · outreach-desk{% endblock %}
+{% block content %}
+<h1>Contacts</h1>
+<p class="sub">{{ contacts | length }} people. Fit scores come from Jev once they're in a campaign.</p>
+{% if msg %}<div class="notice">{{ msg }}</div>{% endif %}
+
+<div class="grid" style="grid-template-columns: 2fr 1fr">
+  <div class="panel">
+    <h2 style="margin-top:0">Add a contact</h2>
+    {% include "_contact_form.html" %}
+  </div>
+  <div>
+    <div class="panel">
+      <h2 style="margin-top:0">Paste a bio</h2>
+      <form hx-post="/contacts/extract" hx-target="#contact-form" hx-swap="outerHTML">
+        <textarea name="text" rows="5" placeholder="Paste a LinkedIn About section, a team page bio or an email signature" required></textarea>
+        <div style="margin-top:8px"><button type="submit">Fill the form</button></div>
+      </form>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <h2 style="margin-top:0">Import CSV</h2>
+      <form method="post" action="/contacts/import" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".csv" required>
+        <p class="muted" style="font-size:12px">Columns: name, email, role, company, facts</p>
+        <button type="submit">Import</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<h2>All contacts</h2>
+<div class="panel table-wrap">
+  <table>
+    <tr><th>Name</th><th>Role</th><th>Fit</th><th>Stage</th><th></th></tr>
+    {% for c in contacts %}
+    <tr>
+      <td><strong>{{ c.name }}</strong><br><span class="muted mono">{{ c.email }}</span></td>
+      <td>{{ c.role }}{% if c.company %}<br><span class="muted">{{ c.company }}</span>{% endif %}</td>
+      <td>
+        {% if c.fit is not none %}
+          <span class="pill {{ 'good' if c.fit >= 0.66 else 'warn' if c.fit >= 0.33 else 'bad' }}">{{ "%.0f" | format(c.fit * 100) }}%</span>
+          {% if c.seniority %}<br><span class="muted" style="font-size:12px">{{ c.seniority }}</span>{% endif %}
+        {% else %}<span class="muted">-</span>{% endif %}
+      </td>
+      <td>
+        <select name="stage" aria-label="Stage for {{ c.name }}" hx-post="/contacts/{{ c.id }}/stage" hx-trigger="change" hx-swap="none">
+          {% for s in stages %}<option value="{{ s }}" {% if s == c.stage %}selected{% endif %}>{{ s }}</option>{% endfor %}
+        </select>
+      </td>
+      <td>
+        <form method="post" action="/contacts/{{ c.id }}/forget"><button class="small danger" title="Delete their data and never email them again">Forget</button></form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="empty">No contacts yet.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
