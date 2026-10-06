@@ -1,0 +1,24 @@
+{% set m, contact = d.m, d.contact %}
+<div class="card" id="r-{{ m.id }}">
+  <div class="row spread">
+    <div><strong>{{ contact.name }}</strong> <span class="muted">replied · {{ m.subject }}</span></div>
+    {% if m.status == "triaged" %}
+      <span class="pill good">{{ m.label | replace("_", " ") }}</span>
+    {% elif m.label %}
+      <span class="pill warn">Jev guessed "{{ m.label | replace("_", " ") }}" at {{ "%.0f" | format((m.confidence or 0) * 100) }}%</span>
+    {% else %}
+      <span class="pill warn">Not classified</span>
+    {% endif %}
+  </div>
+  <div class="reply-text">{{ m.body or "(empty)" }}</div>
+  {% if m.status == "needs_triage" %}
+    <form class="row" hx-post="/replies/{{ m.id }}/label" hx-target="#r-{{ m.id }}" hx-swap="outerHTML">
+      <select name="label" style="width:auto">
+        {% for key, desc in labels.items() %}
+          <option value="{{ key }}" {% if key == m.label %}selected{% endif %}>{{ key | replace("_", " ") }}: {{ desc }}</option>
+        {% endfor %}
+      </select>
+      <button class="primary" type="submit">Confirm</button>
+    </form>
+  {% endif %}
+</div>

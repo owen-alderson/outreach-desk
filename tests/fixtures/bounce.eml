@@ -1,0 +1,28 @@
+From: Mail Delivery Subsystem <mailer-daemon@googlemail.com>
+To: owen@test.dev
+Subject: Delivery Status Notification (Failure)
+Message-ID: <bounce-1@google.com>
+MIME-Version: 1.0
+Content-Type: multipart/report; report-type=delivery-status; boundary="BND"
+
+--BND
+Content-Type: text/plain; charset="utf-8"
+
+Address not found. Your message wasn't delivered to nobody@example.com.
+
+--BND
+Content-Type: message/delivery-status
+
+Final-Recipient: rfc822; nobody@example.com
+Action: failed
+Status: 5.1.1
+
+--BND
+Content-Type: text/rfc822-headers
+
+From: Owen <owen@test.dev>
+To: nobody@example.com
+Subject: Series B question
+Message-ID: <orig-9@test.dev>
+
+--BND--

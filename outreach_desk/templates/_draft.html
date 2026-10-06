@@ -1,0 +1,45 @@
+{% set m, contact, campaign = d.m, d.contact, d.campaign %}
+<div class="card" id="m-{{ m.id }}">
+  <div class="row spread">
+    <div>
+      <strong>{{ contact.name }}</strong>
+      <span class="muted">· {{ contact.role or "role unknown" }}{% if contact.company %} at {{ contact.company }}{% endif %}</span>
+    </div>
+    <div class="row">
+      {% if campaign %}<span class="pill">{{ campaign.name }}</span>{% endif %}
+      <span class="pill">{{ "First email" if m.step == 0 else "Follow-up " ~ m.step }}</span>
+      {% if m.status == "approved" %}<span class="pill good">Approved</span>
+      {% elif m.status == "rejected" %}<span class="pill bad">Discarded</span>
+      {% elif m.status == "failed" %}<span class="pill bad">Draft failed</span>{% endif %}
+    </div>
+  </div>
+
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+  {% if m.status in ("draft", "failed") %}
+    {% if m.error %}<div class="error">{{ m.error }}</div>{% endif %}
+    {% if m.flags %}
+      <div class="flags"><strong>Check before sending</strong>
+        <ul>{% for f in m.flags %}<li>{{ f }}</li>{% endfor %}</ul>
+      </div>
+    {% elif m.status == "draft" %}
+      <p class="ok">✓ Passed the guardrail checks</p>
+    {% endif %}
+    <form hx-post="/drafts/{{ m.id }}/approve" hx-target="#m-{{ m.id }}" hx-swap="outerHTML">
+      <label for="s-{{ m.id }}">Subject</label>
+      <input id="s-{{ m.id }}" name="subject" value="{{ m.subject }}" required>
+      <label for="b-{{ m.id }}">Body</label>
+      <textarea id="b-{{ m.id }}" name="body" class="body-edit" required>{{ m.body }}</textarea>
+      <div class="row" style="margin-top:10px">
+        <button class="primary" type="submit">Approve</button>
+        <button type="button" hx-post="/drafts/{{ m.id }}/regenerate" hx-target="#m-{{ m.id }}" hx-swap="outerHTML">Regenerate</button>
+        <button type="button" class="danger" hx-post="/drafts/{{ m.id }}/discard" hx-target="#m-{{ m.id }}" hx-swap="outerHTML">Discard &amp; stop sequence</button>
+      </div>
+    </form>
+  {% elif m.status == "approved" %}
+    <p class="muted">Subject: {{ m.subject }}</p>
+    <p class="muted">Queued. It sends on the next run inside the send window.</p>
+  {% else %}
+    <p class="muted">{{ m.error or "Discarded. This contact's sequence is stopped." }}</p>
+  {% endif %}
+</div>
