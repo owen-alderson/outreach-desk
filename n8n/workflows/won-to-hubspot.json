@@ -1,0 +1,34 @@
+{
+  "name": "outreach-desk: deal won → HubSpot contact",
+  "nodes": [
+    {
+      "id": "w1", "name": "Stage changed", "type": "n8n-nodes-outreach-desk.outreachDeskTrigger", "typeVersion": 1, "position": [0, 0],
+      "parameters": { "events": ["contact.stage_changed"], "labels": [] }
+    },
+    {
+      "id": "w2", "name": "Won?", "type": "n8n-nodes-base.filter", "typeVersion": 2, "position": [240, 0],
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "typeValidation": "strict" },
+          "conditions": [
+            { "id": "c1", "leftValue": "={{ $json.data.stage }}", "rightValue": "won", "operator": { "type": "string", "operation": "equals" } }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "w3", "name": "Upsert in HubSpot", "type": "n8n-nodes-base.hubspot", "typeVersion": 2.2, "position": [480, 0],
+      "parameters": {
+        "resource": "contact", "operation": "upsert",
+        "email": "={{ $json.data.email }}",
+        "additionalFields": { "firstName": "={{ $json.data.name.split(' ')[0] }}", "lastName": "={{ $json.data.name.split(' ').slice(1).join(' ') }}", "companyName": "={{ $json.data.company }}", "jobTitle": "={{ $json.data.role }}" }
+      }
+    }
+  ],
+  "connections": {
+    "Stage changed": { "main": [[{ "node": "Won?", "type": "main", "index": 0 }]] },
+    "Won?": { "main": [[{ "node": "Upsert in HubSpot", "type": "main", "index": 0 }]] }
+  },
+  "settings": {}
+}

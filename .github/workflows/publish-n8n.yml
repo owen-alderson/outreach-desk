@@ -1,0 +1,33 @@
+# Push a tag like n8n-v1.0.1 to lint, build and publish n8n-nodes-outreach-desk to npm with a
+# provenance statement (required by n8n for community nodes since May 1 2026).
+# One-time setup: on npmjs.com add this repo + publish-n8n.yml as a Trusted Publisher,
+# or store an automation token as the NPM_TOKEN repository secret.
+name: Publish n8n node to npm
+
+on:
+  push:
+    tags: ["n8n-v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # npm provenance + trusted publishing
+      contents: read
+    defaults:
+      run:
+        working-directory: n8n-node
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+          registry-url: https://registry.npmjs.org
+          cache: npm
+          cache-dependency-path: n8n-node/package-lock.json
+      - name: Tag matches package.json version
+        run: test "${GITHUB_REF_NAME#n8n-v}" = "$(node -p "require('./package.json').version")"
+      - run: npm ci
+      - run: npm run release  # lint, build, npm publish with provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
