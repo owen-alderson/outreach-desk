@@ -1,0 +1,10 @@
+{
+	"node": "n8n-nodes-outreach-desk.outreachDesk",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Sales", "Communication"],
+	"resources": {
+		"credentialDocumentation": [{ "url": "https://github.com/owen-alderson/outreach-desk/tree/main/n8n-node#credentials" }],
+		"primaryDocumentation": [{ "url": "https://github.com/owen-alderson/outreach-desk/tree/main/n8n-node" }]
+	}
+}

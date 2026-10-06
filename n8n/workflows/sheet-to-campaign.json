@@ -1,0 +1,31 @@
+{
+  "name": "outreach-desk: new Google Sheet row → contact → campaign",
+  "nodes": [
+    {
+      "id": "s1", "name": "New lead row", "type": "n8n-nodes-base.googleSheetsTrigger", "typeVersion": 1, "position": [0, 0],
+      "parameters": {
+        "pollTimes": { "item": [{ "mode": "everyMinute" }] },
+        "documentId": { "__rl": true, "mode": "url", "value": "" },
+        "sheetName": { "__rl": true, "mode": "list", "value": "" },
+        "event": "rowAdded"
+      }
+    },
+    {
+      "id": "s2", "name": "Create contact", "type": "n8n-nodes-outreach-desk.outreachDesk", "typeVersion": 1, "position": [240, 0],
+      "parameters": {
+        "resource": "contact", "operation": "create",
+        "name": "={{ $json.name }}", "email": "={{ $json.email }}",
+        "additionalFields": { "role": "={{ $json.role }}", "company": "={{ $json.company }}", "facts": "={{ $json.facts }}" }
+      }
+    },
+    {
+      "id": "s3", "name": "Enroll in campaign", "type": "n8n-nodes-outreach-desk.outreachDesk", "typeVersion": 1, "position": [480, 0],
+      "parameters": { "resource": "campaign", "operation": "enroll", "campaignId": 1, "emails": "={{ $json.email }}" }
+    }
+  ],
+  "connections": {
+    "New lead row": { "main": [[{ "node": "Create contact", "type": "main", "index": 0 }]] },
+    "Create contact": { "main": [[{ "node": "Enroll in campaign", "type": "main", "index": 0 }]] }
+  },
+  "settings": {}
+}
