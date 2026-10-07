@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Settings · outreach-desk{% endblock %}
+{% block content %}
+<h1>Settings</h1>
+<p class="sub">Mail and model settings come from <span class="mono">~/.outreach-desk/.env</span> (see the README). Restart after changing them.</p>
+
+<div class="grid">
+  <div class="panel"><div class="muted">Drafting model</div><div class="mono">{{ model }}</div></div>
+  <div class="panel"><div class="muted">Decision backend</div><div class="mono">{{ backend }}</div>
+    {% if backend != "jev" %}<div class="muted" style="font-size:12px">Set TYPESAFE_API_KEY to use Jev.</div>{% endif %}</div>
+  <div class="panel"><div class="muted">Sending (SMTP)</div>
+    <span class="pill {{ 'good' if settings.can_send else 'bad' }}">{{ settings.smtp_user if settings.can_send else "off" }}</span></div>
+  <div class="panel"><div class="muted">Replies (IMAP)</div>
+    <span class="pill {{ 'good' if settings.can_receive else 'bad' }}">{{ settings.imap_host if settings.can_receive else "off" }}</span></div>
+</div>
+
+<h2>API key</h2>
+<div class="panel">
+  <p class="muted">For the n8n node and scripts: send <span class="mono">Authorization: Bearer &lt;key&gt;</span>.</p>
+  <div class="row"><input class="mono" value="{{ api_key }}" readonly style="max-width:420px" aria-label="API key">
+    <form method="post" action="/settings/rotate-key"><button class="small">Rotate</button></form></div>
+</div>
+
+<h2>Webhooks</h2>
+<div class="panel">
+  <p class="muted">Events: {% for e in events %}<span class="mono">{{ e }}</span>{{ ", " if not loop.last }}{% endfor %}. Each POST carries
+    <span class="mono">X-Outreach-Signature: sha256=HMAC(secret, body)</span>.</p>
+  <table>
+    {% for h in hooks %}
+    <tr><td class="mono">{{ h.url }}</td><td class="mono">{{ h.events }}</td><td class="mono muted">secret {{ h.secret }}</td>
+      <td><form method="post" action="/settings/webhooks/{{ h.id }}/delete"><button class="small danger">Delete</button></form></td></tr>
+    {% endfor %}
+  </table>
+  <form class="row" method="post" action="/settings/webhooks" style="margin-top:10px">
+    <input name="url" type="url" placeholder="https://n8n.example.com/webhook/..." required style="flex:2">
+    <input name="events" value="*" style="flex:1" aria-label="Events">
+    <button type="submit">Add webhook</button>
+  </form>
+</div>
+
+<h2>Do-not-contact list ({{ suppressed | length }})</h2>
+<div class="panel">
+  <form class="row" method="post" action="/settings/suppress">
+    <input name="email" type="email" placeholder="someone@example.com" required style="flex:1">
+    <button type="submit">Suppress</button>
+  </form>
+  <table style="margin-top:10px">
+    {% for x in suppressed %}<tr><td class="mono">{{ x.email }}</td><td><span class="pill">{{ x.reason }}</span></td><td class="muted">{{ x.created_at.strftime("%Y-%m-%d") }}</td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}

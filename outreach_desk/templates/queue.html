@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Queue · outreach-desk{% endblock %}
+{% block content %}
+<div class="row spread">
+  <div>
+    <h1>Review queue</h1>
+    <p class="sub">Nothing sends until you approve it. Sequences stop the moment someone replies.</p>
+  </div>
+  <form method="post" action="/tick"><button>Run now</button></form>
+</div>
+
+<div class="grid">
+  <div class="panel"><div class="muted">Drafts to review</div><div class="stat">{{ drafts | length }}</div></div>
+  <div class="panel"><div class="muted">Approved, waiting to send</div><div class="stat">{{ approved | length }}</div></div>
+  <div class="panel"><div class="muted">Replies to triage</div><div class="stat">{{ triage | length }}</div></div>
+  <div class="panel">
+    <div class="muted">Sent today</div>
+    <div class="stat">{{ sent_today }} <span class="muted" style="font-size:14px">/ {{ settings.daily_cap }}</span></div>
+    <div class="muted" style="font-size:12px">
+      {% if settings.can_send %}Window {{ settings.send_window[0] }}:00–{{ settings.send_window[1] }}:00{% else %}Sending is off: add SMTP settings{% endif %}
+    </div>
+  </div>
+</div>
+
+{% if triage %}
+  <h2>Replies Jev wasn't sure about</h2>
+  {% for d in triage %}{% include "_reply.html" %}{% endfor %}
+{% endif %}
+
+<h2>Drafts</h2>
+{% for d in drafts %}{% include "_draft.html" %}{% else %}
+  <div class="panel empty">No drafts. Enrol contacts in a <a href="/campaigns">campaign</a> and they'll appear here.</div>
+{% endfor %}
+
+{% if approved %}
+  <h2>Approved</h2>
+  {% for d in approved %}{% include "_draft.html" %}{% endfor %}
+{% endif %}
+{% endblock %}

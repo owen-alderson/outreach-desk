@@ -1,0 +1,31 @@
+# outreach-desk + n8n, wired together.
+#   docker compose up -d
+# outreach-desk: http://localhost:8000    n8n: http://localhost:5678
+# Then in n8n: Settings → Community Nodes → install "n8n-nodes-outreach-desk", and create an
+# "Outreach Desk API" credential with base URL http://outreach-desk:8000 and the API key from
+# outreach-desk's Settings page. Workflow templates are in n8n/workflows/.
+services:
+  outreach-desk:
+    build: .
+    env_file:
+      - path: .env
+        required: false
+    ports:
+      - "127.0.0.1:8000:8000"  # localhost only: the pages have no login
+    volumes:
+      - desk-data:/data
+
+  n8n:
+    image: n8nio/n8n:latest
+    environment:
+      # Trigger webhooks are registered with this base URL, which the outreach-desk container can reach.
+      - WEBHOOK_URL=http://n8n:5678/
+      - N8N_SECURE_COOKIE=false
+    ports:
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - n8n-data:/home/node/.n8n
+
+volumes:
+  desk-data:
+  n8n-data:

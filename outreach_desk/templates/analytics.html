@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Analytics · outreach-desk{% endblock %}
+{% macro pct(x) %}{% if x is none %}-{% else %}{{ "%.0f" | format(x * 100) }}%{% endif %}{% endmacro %}
+{% block content %}
+<h1>Analytics</h1>
+<p class="sub">Reply rate = contacted people who replied (auto-replies and bounces excluded). Positive = interested, meeting or referral.</p>
+
+{% for r in rows %}
+<div class="card">
+  <div class="row spread">
+    <strong>{{ r.campaign.name }}</strong>
+    <span class="pill">{{ r.campaign.mode }}</span>
+  </div>
+  <div class="grid" style="margin-top:10px">
+    <div><div class="muted">Contacted</div><div class="stat">{{ r.contacted }}</div></div>
+    <div><div class="muted">Emails sent</div><div class="stat">{{ r.sent }}</div></div>
+    <div><div class="muted">Reply rate</div><div class="stat">{{ pct(r.reply_rate) }}</div>
+      <div class="bar"><span style="width:{{ (r.reply_rate or 0) * 100 }}%"></span></div></div>
+    <div><div class="muted">Positive rate</div><div class="stat">{{ pct(r.positive_rate) }}</div>
+      <div class="bar"><span style="width:{{ (r.positive_rate or 0) * 100 }}%"></span></div></div>
+  </div>
+  {% if r.steps %}
+  <table style="margin-top:12px">
+    <tr><th>Step</th><th>Sent</th><th>Replies after this step</th></tr>
+    {% for s in r.steps %}
+    <tr><td>{{ "First email" if s.step == 0 else "Follow-up " ~ s.step }}</td><td>{{ s.sent }}</td><td>{{ s.replies }}</td></tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+</div>
+{% else %}
+<div class="panel empty">No campaigns yet.</div>
+{% endfor %}
+
+<h2>Reply labels</h2>
+<div class="panel row">
+  {% for label, n in labels.most_common() %}<span class="pill">{{ label | replace("_", " ") }} · {{ n }}</span>{% else %}<span class="muted">No replies yet.</span>{% endfor %}
+</div>
+
+<h2>Decisions</h2>
+<p class="sub">Every typed decision (guardrail, lead fit, reply triage) is logged with the backend that answered and how long it took.</p>
+<div class="panel table-wrap">
+  <table>
+    <tr><th>Backend</th><th>Decision</th><th>Count</th><th>Avg latency</th><th>Slowest</th></tr>
+    {% for d in decisions %}
+    <tr><td class="mono">{{ d.backend }}</td><td>{{ d.kind }}</td><td>{{ d.count }}</td>
+        <td>{{ "%.0f" | format(d.avg_ms) }} ms</td><td>{{ "%.0f" | format(d.max_ms) }} ms</td></tr>
+    {% else %}
+    <tr><td colspan="5" class="empty">No decisions yet.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{
+  "name": "outreach-desk: interested reply → Slack alert",
+  "nodes": [
+    {
+      "id": "h1", "name": "Hot reply", "type": "n8n-nodes-outreach-desk.outreachDeskTrigger", "typeVersion": 1, "position": [0, 0],
+      "parameters": { "events": ["reply.classified"], "labels": ["interested", "meeting_request", "referral"] }
+    },
+    {
+      "id": "h2", "name": "Tell me on Slack", "type": "n8n-nodes-base.slack", "typeVersion": 2.3, "position": [240, 0],
+      "parameters": {
+        "select": "channel",
+        "channelId": { "__rl": true, "mode": "name", "value": "#outreach" },
+        "text": "={{ $json.data.contact.name }} ({{ $json.data.contact.company }}) replied: *{{ $json.data.label.replace('_', ' ') }}* ({{ Math.round($json.data.confidence * 100) }}% sure)\n>{{ $json.data.body }}",
+        "otherOptions": {}
+      }
+    }
+  ],
+  "connections": { "Hot reply": { "main": [[{ "node": "Tell me on Slack", "type": "main", "index": 0 }]] } },
+  "settings": {}
+}
