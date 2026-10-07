@@ -22,9 +22,9 @@ hand. outreach-desk splits the work three ways:
 
 | | Who | What |
 |---|---|---|
-| ✍️ **Writes** | Claude (`claude-opus-5-5`) | First emails and follow-ups, personalised **only** from facts you gave it about the recipient |
-| ⚖️ **Decides** | [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev) (TypeSafe's System One model) | Typed, fast decisions with calibrated confidence: is this draft safe to send, how good a fit is this lead, what kind of reply is this |
-| ✅ **Approves** | You | Nothing is ever sent until you approve that exact draft |
+| **Writes** | Claude (`claude-opus-5-5`) | First emails and follow-ups, personalised **only** from facts you gave it about the recipient |
+| **Decides** | [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev) (TypeSafe's System One model) | Typed, fast decisions with calibrated confidence: is this draft safe to send, how good a fit is this lead, what kind of reply is this |
+| **Approves** | You | Nothing is ever sent until you approve that exact draft |
 
 When Jev isn't confident, the decision goes to you instead of guessing.
 
