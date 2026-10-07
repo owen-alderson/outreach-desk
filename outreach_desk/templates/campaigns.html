@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Campaigns · outreach-desk{% endblock %}
+{% block content %}
+<h1>Campaigns</h1>
+<p class="sub">A campaign is one ask, sent as a short sequence: a first email plus follow-ups that stop on reply.</p>
+
+{% if campaigns %}
+<div class="panel table-wrap">
+  <table>
+    <tr><th>Name</th><th>Mode</th><th>Goal</th><th>Contacts</th></tr>
+    {% for c in campaigns %}
+    <tr>
+      <td><a href="/campaigns/{{ c.id }}"><strong>{{ c.name }}</strong></a></td>
+      <td><span class="pill">{{ c.mode }}</span></td>
+      <td>{{ c.goal }}</td>
+      <td>{{ counts.get(c.id, 0) }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endif %}
+
+<h2>New campaign</h2>
+<form class="panel" method="post" action="/campaigns">
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  <div class="grid">
+    <div><label for="c-name">Name</label><input id="c-name" name="name" value="{{ form.name or '' }}" placeholder="London PE intros" required></div>
+    <div>
+      <label for="c-mode">Mode</label>
+      <select id="c-mode" name="mode">
+        {% for m in modes %}<option value="{{ m }}" {% if form.mode == m %}selected{% endif %}>{{ m }}</option>{% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="c-tone">Tone</label>
+      <select id="c-tone" name="tone">
+        {% for t in tones %}<option {% if (form.tone or "Warm and direct") == t %}selected{% endif %}>{{ t }}</option>{% endfor %}
+      </select>
+    </div>
+  </div>
+  <label for="c-goal">Goal</label>
+  <input id="c-goal" name="goal" list="goal-list" value="{{ form.goal or '' }}" placeholder="Request a 20-minute intro call" required>
+  <datalist id="goal-list">{% for mode, gs in goals.items() %}{% for g in gs %}<option value="{{ g }}">{% endfor %}{% endfor %}</datalist>
+  <label for="c-detail">Specifics</label>
+  <textarea id="c-detail" name="goal_detail" rows="2" placeholder="Exploring PE roles in London after graduating in 2027">{{ form.goal_detail or '' }}</textarea>
+  <label for="c-target">Who it's for (Jev scores each contact's fit against this)</label>
+  <input id="c-target" name="target" value="{{ form.target or '' }}" placeholder="VPs and partners at mid-market PE funds in London">
+  <div class="grid">
+    <div><label for="c-sender">Your name</label><input id="c-sender" name="sender_name" value="{{ form.sender_name or '' }}" required></div>
+    <div><label for="c-ctx">Your context</label><input id="c-ctx" name="sender_context" value="{{ form.sender_context or '' }}" placeholder="BBA/CS student at IE University"></div>
+    <div><label for="c-delays">Sequence: days between emails</label><input id="c-delays" name="delays" value="{{ form.delays or '0, 4, 7' }}"></div>
+  </div>
+  <p class="muted" style="font-size:12px">"0, 4, 7" = first email now, a follow-up 4 days later, a last one 7 days after that.</p>
+  <button class="primary" type="submit">Create campaign</button>
+</form>
+{% endblock %}

@@ -1,0 +1,9 @@
+.git
+.venv
+**/__pycache__
+n8n-node
+n8n
+tests
+docs
+*.db
+.env

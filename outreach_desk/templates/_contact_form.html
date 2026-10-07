@@ -1,0 +1,12 @@
+<form id="contact-form" method="post" action="/contacts">
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  <div class="grid">
+    <div><label for="cf-name">Name</label><input id="cf-name" name="name" value="{{ form.name or '' }}" required></div>
+    <div><label for="cf-email">Email</label><input id="cf-email" name="email" type="email" value="{{ form.email or '' }}" required></div>
+    <div><label for="cf-role">Role</label><input id="cf-role" name="role" value="{{ form.role or '' }}"></div>
+    <div><label for="cf-company">Company</label><input id="cf-company" name="company" value="{{ form.company or '' }}"></div>
+  </div>
+  <label for="cf-facts">Facts: the only things a draft may say about them</label>
+  <textarea id="cf-facts" name="facts" rows="3" placeholder="- Led the Series B at Acme&#10;- Spoke at IE about fintech in March&#10;- Paris suggested I reach out">{{ form.facts or '' }}</textarea>
+  <div style="margin-top:10px"><button class="primary" type="submit">Add contact</button></div>
+</form>

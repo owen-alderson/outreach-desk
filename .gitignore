@@ -4,3 +4,8 @@ __pycache__/
 .DS_Store
 venv/
 .venv/
+.pytest_cache/
+dist/
+*.db
+n8n-node/node_modules/
+n8n-node/dist/
