@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-outreach-desk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "n8n nodes for outreach-desk: add contacts, enrol them in campaigns, approve drafts, and trigger on replies classified by Jev.",
   "license": "MIT",
   "homepage": "https://github.com/owen-alderson/outreach-desk/tree/main/n8n-node",
@@ -33,6 +33,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "n8n": {
     "n8nNodesApiVersion": 1,
     "strict": true,
