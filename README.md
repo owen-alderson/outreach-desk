@@ -150,11 +150,15 @@ These are enforced in code and covered by tests:
   if the person replies first.
 - **Daily cap and send window** for every mailbox.
 - **Do-not-contact list:** unsubscribes, bounces and contacts you delete are never emailed again.
-- **Sales mode** adds a postal address, an unsubscribe line and a `List-Unsubscribe` header.
+- **Sales mode** adds a postal address, an unsubscribe line and a `List-Unsubscribe` header, and
+  won't send until `POSTAL_ADDRESS` is set.
 - **Delete a contact** removes their data (right to erasure) and keeps only their address on the
   do-not-contact list.
 - **The app listens on localhost** with no login, and refuses form posts coming from other
   websites. Don't expose it to the internet without putting authentication in front of it.
+
+You are responsible for who you email: anti-spam and privacy law (CAN-SPAM in the US, GDPR and
+PECR in the UK and EU) applies to you, not to this tool.
 
 Deliverability tip: send from a secondary address or domain, warm it up, and keep the daily cap low.
 
