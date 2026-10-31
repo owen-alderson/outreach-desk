@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "outreach-desk"
-version = "2.0.0"
+version = "2.0.1"
 description = "A self-hosted outreach desk: Claude writes the emails, Jev makes the calls, you approve every send. With an n8n node."
 readme = "README.md"
 requires-python = ">=3.10"
