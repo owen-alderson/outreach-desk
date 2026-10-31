@@ -84,8 +84,8 @@ class FakeDrafter:
     def extract_contact(self, text):
         if self.fail:
             raise DraftError(self.fail)
-        return {"name": "Grace Hopper", "email": "grace@navy.mil", "role": "Rear Admiral", "company": "US Navy",
-                "facts": "- Wrote the first compiler"}
+        return {"name": "Ada Moss", "email": "ada@example.com", "role": "Partner", "company": "Example Capital",
+                "facts": "- Led the Series B at Acme"}
 
 
 class FakeMailer:

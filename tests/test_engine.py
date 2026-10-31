@@ -237,6 +237,14 @@ def test_sales_mode_email_has_footer(session, engine, fakes):
     assert "Calle Falsa 123" in fakes.mailer.sent[0].get_content()
 
 
+def test_sales_mode_needs_a_postal_address(session, engine, fakes):
+    engine.settings.postal_address = ""
+    setup(session, engine, mode="sales")
+    assert send_first(session, engine) == 0
+    assert not fakes.mailer.sent
+    assert "POSTAL_ADDRESS" in drafts(session, "approved")[0].error
+
+
 def test_sent_today_counts_only_today(session, engine):
     setup(session, engine)
     send_first(session, engine)

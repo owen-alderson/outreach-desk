@@ -252,6 +252,11 @@ class Engine:
                 session.add(m)
                 session.commit()
                 continue
+            if campaign.mode == "sales" and not s.postal_address:
+                m.error = "Not sent: sales emails need POSTAL_ADDRESS in .env (CAN-SPAM). It stays approved."
+                session.add(m)
+                session.commit()
+                continue
             email = build_email(
                 subject=m.subject,
                 body=m.body,

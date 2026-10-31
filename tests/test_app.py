@@ -54,8 +54,8 @@ def test_contact_names_are_escaped(client, session):
 
 
 def test_extract_fills_form(client):
-    r = client.post("/contacts/extract", data={"text": "Grace Hopper, Rear Admiral"})
-    assert 'value="Grace Hopper"' in r.text and "first compiler" in r.text
+    r = client.post("/contacts/extract", data={"text": "Ada Moss, Partner"})
+    assert 'value="Ada Moss"' in r.text and "Series B" in r.text
 
 
 def test_extract_error_is_shown(client, fakes):
